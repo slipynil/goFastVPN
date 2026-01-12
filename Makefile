@@ -1,3 +1,6 @@
+service-run:
+	sudo go run ./internal/cmd/main.go
+
 wg-stop:
 	sudo ip link delete dev wg0 2>/dev/null || true
 
