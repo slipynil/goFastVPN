@@ -16,10 +16,7 @@ func main() {
 	}
 	defer WgClient.Close()
 
-	wgService := wireguard.WireGuardService("awg0", "127.0.0.1:5050", "5050", WgClient)
-	if err := wgService.ConfigureServer(); err != nil {
-		panic(err)
-	}
+	wgService := wireguard.WireGuardService("wg0", "127.0.0.1:5050", "5050", WgClient)
 	if err := wgService.DeviceInfo(); err != nil {
 		panic(err)
 	}
