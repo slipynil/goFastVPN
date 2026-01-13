@@ -16,8 +16,7 @@ services:
     devices:
       - /dev/net/tun
     volumes:
-      - ./data/docker-volumes/:/etc/amnezia:rw
+      - /etc/amnezia/:/etc/amnezia:rw
     ports:
       - "5050:5050/udp"
     restart: unless-stopped
-
