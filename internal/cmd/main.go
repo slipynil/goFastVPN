@@ -1,12 +1,14 @@
 package main
 
 import (
+	"app/internal/core"
 	"app/internal/feature/amneziawg/service/wireguard"
 
-	"golang.zx2c4.com/wireguard/wgctrl"
+	"github.com/Jipok/wgctrl-go"
 )
 
 func main() {
+	core.CreateInterface()
 	// клиент для управления WireGuard устройствами
 	WgClient, err := wgctrl.New()
 	if err != nil {
@@ -14,7 +16,7 @@ func main() {
 	}
 	defer WgClient.Close()
 
-	wgService := wireguard.WireGuardService("wg0", "127.0.0.1:5050", "5050", WgClient)
+	wgService := wireguard.WireGuardService("awg0", "127.0.0.1:5050", "5050", WgClient)
 	if err := wgService.ConfigureServer(); err != nil {
 		panic(err)
 	}

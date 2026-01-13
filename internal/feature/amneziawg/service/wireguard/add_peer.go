@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
+	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
 func (s WireGuard) AddPeer() error {

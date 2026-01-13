@@ -1,0 +1,23 @@
+services:
+
+  go-service:
+    build: . 
+    container_name: go-app
+    privileged: true
+    depends_on:
+      amneziawgml:
+        condition: service_started
+
+  amneziawgml:
+    image: metaligh/amneziawg:latest
+    container_name: amnezia_container
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    volumes:
+      - ./data/docker-volumes/:/etc/amnezia:rw
+    ports:
+      - "5050:5050/udp"
+    restart: unless-stopped
+

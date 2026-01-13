@@ -1,8 +1,6 @@
 package wireguard
 
-import (
-	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
-)
+import "github.com/Jipok/wgctrl-go/wgtypes"
 
 func (s WireGuard) ConfigureServer() error {
 
