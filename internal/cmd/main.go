@@ -1,14 +1,12 @@
 package main
 
 import (
-	"app/internal/core"
 	"app/internal/feature/amneziawg/service/wireguard"
 
 	"github.com/Jipok/wgctrl-go"
 )
 
 func main() {
-	core.CreateInterface()
 	// клиент для управления WireGuard устройствами
 	WgClient, err := wgctrl.New()
 	if err != nil {
