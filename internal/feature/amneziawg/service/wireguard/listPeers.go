@@ -12,7 +12,6 @@ func (s WireGuard) ListPeers() error {
 		fmt.Println("---PEER CONNECTION---")
 		fmt.Println("Virtual Network:", peer.AllowedIPs[0])
 		fmt.Println("Public Key:", peer.PublicKey)
-		fmt.Println("EndPoint:", peer.Endpoint)
 		fmt.Println("Last Handshake:", peer.LastHandshakeTime)
 	}
 	return nil
