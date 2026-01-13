@@ -23,6 +23,4 @@ services:
       - /dev/net/tun
     volumes:
       - /etc/amnezia/:/etc/amnezia:rw
-    ports:
-      - "5050:5050/udp"
     restart: unless-stopped
