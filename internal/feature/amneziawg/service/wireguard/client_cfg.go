@@ -90,5 +90,5 @@ func saveCfg(cfg obfuscationCfg) error {
 	}
 	defer file.Close()
 
-	return json.NewDecoder(file).Decode(cfg)
+	return json.NewEncoder(file).Encode(cfg)
 }
