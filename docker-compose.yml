@@ -1,0 +1,38 @@
+services:
+
+  go-service:
+    build: . 
+    volumes:
+      - /sys:/sys:ro
+      - /etc/amnezia/:/etc/amnezia
+    container_name: go-app
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun
+    network_mode: host
+    privileged: true
+    depends_on:
+      amneziawgml:
+        condition: service_healthy
+
+  amneziawgml:
+    image: metaligh/amneziawg:latest
+    container_name: amnezia_container
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    volumes:
+      - /etc/amnezia/:/etc/amnezia:rw
+    restart: unless-stopped
+    command: bash -c "awg-quick up awg0 && tail -f /dev/null"
+    healthcheck:
+      test: ["CMD", "ip", "link", "show", "awg0"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
