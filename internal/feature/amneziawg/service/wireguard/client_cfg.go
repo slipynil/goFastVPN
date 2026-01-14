@@ -2,7 +2,6 @@ package wireguard
 
 import (
 	"encoding/json"
-	"io"
 	"os"
 
 	"github.com/Jipok/wgctrl-go/wgtypes"
