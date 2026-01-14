@@ -107,8 +107,10 @@ H4 = 1646644382
 
 [Peer]
 PublicKey = %v
-Endpoint = 91.103.140.214/5050
-AllowedIPs = 0.0.0.0/0`,
+Endpoint = 91.103.140.214:5050
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
+`,
 		userPrivateKey,
 		userIPstr,
 		cfg.Jc,
