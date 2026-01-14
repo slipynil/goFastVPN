@@ -1,21 +1,12 @@
 package wireguard
 
 import (
+	"app/internal/core/domains"
 	"encoding/json"
 	"os"
 
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
-
-type obfuscationCfg struct {
-	Jc   int
-	Jmin int
-	Jmax int
-	S1   int
-	S2   int
-	S3   int
-	S4   int
-}
 
 func (s WireGuard) ConfigureServer() error {
 
@@ -39,7 +30,7 @@ func (s WireGuard) ConfigureServer() error {
 	s3 := 0
 	s4 := 0
 
-	obfCfg := obfuscationCfg{jc, jmin, jmax, s1, s2, s3, s4}
+	obfCfg := domains.ObfuscationCfg{jc, jmin, jmax, s1, s2, s3, s4, devicePrivKey.PublicKey().String()}
 	saveCfg(obfCfg)
 
 	// ПРАВИЛО КОНФИГУРАЦИИ
@@ -82,9 +73,9 @@ func (s WireGuard) ConfigureServer() error {
 	return err
 }
 
-func saveCfg(cfg obfuscationCfg) error {
-	fileName := "obfuscation.txt"
-	file, err := os.Create(fileName)
+func saveCfg(cfg domains.ObfuscationCfg) error {
+	filePath := "data/obfuscation.txt"
+	file, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
