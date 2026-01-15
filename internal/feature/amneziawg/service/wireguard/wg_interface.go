@@ -8,10 +8,8 @@ import (
 
 // интерфейс для работы с WireGuard
 type WireGuardClient interface {
-	Close() error
 	ConfigureDevice(name string, cfg wgtypes.Config) error
 	Device(name string) (*wgtypes.Device, error)
-	Devices() ([]*wgtypes.Device, error)
 }
 
 type WireGuard struct {
@@ -21,8 +19,8 @@ type WireGuard struct {
 	client      WireGuardClient
 }
 
-func WireGuardService(deviceName, endpoint string, obfuscation *domains.Obfuscation, client WireGuardClient) WireGuard {
-	return WireGuard{
+func WireGuardService(deviceName, endpoint string, obfuscation *domains.Obfuscation, client WireGuardClient) *WireGuard {
+	return &WireGuard{
 		deviceName:  deviceName,
 		endpoint:    endpoint,
 		obfuscation: obfuscation,

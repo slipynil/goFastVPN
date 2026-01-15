@@ -7,7 +7,7 @@ import (
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
-func (s WireGuard) AddPeer() (string, error) {
+func (s *WireGuard) AddPeer() (string, error) {
 
 	// генерируем виртуальный IP
 	peerVirtualEndpoint, err := s.allowedIPS()
@@ -50,6 +50,7 @@ func (s WireGuard) AddPeer() (string, error) {
 		Peers:        []wgtypes.PeerConfig{peerCfg},
 	}
 
+	// Задаем новую конфигурацию девайса (туннель)
 	if err := s.client.ConfigureDevice(s.deviceName, cfg); err != nil {
 		return "", err
 	}
@@ -59,7 +60,7 @@ func (s WireGuard) AddPeer() (string, error) {
 
 // Выделение IP с проверкой занятости
 // ПОТОМ УДАЛИМ ЭТУ ФУНКЦИЮ
-func (s WireGuard) allowedIPS() (string, error) {
+func (s *WireGuard) allowedIPS() (string, error) {
 	// Получаем текущих пиров
 	device, err := s.client.Device(s.deviceName)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 )
 
 // выводит информацию о работе девайса(интерфейса)
-func (s WireGuard) DeviceInfo() error {
+func (s *WireGuard) DeviceInfo() error {
 
 	device, err := s.client.Device(s.deviceName)
 	if err != nil {

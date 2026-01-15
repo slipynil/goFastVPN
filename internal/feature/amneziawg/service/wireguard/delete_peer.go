@@ -3,7 +3,7 @@ package wireguard
 import "github.com/Jipok/wgctrl-go/wgtypes"
 
 // удаляет пир из тунеля по публичному ключу пира
-func (s WireGuard) DeletePeer(peerPublicKeyStr string) error {
+func (s *WireGuard) DeletePeer(peerPublicKeyStr string) error {
 	peerPublicKey, err := wgtypes.ParseKey(peerPublicKeyStr)
 	if err != nil {
 		return err

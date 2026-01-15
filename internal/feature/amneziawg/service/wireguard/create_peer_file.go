@@ -8,7 +8,7 @@ import (
 )
 
 // создает новый конфигурационный файл для подключения пользователя к туннелю
-func (s WireGuard) createPeerCfg(peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
+func (s *WireGuard) createPeerCfg(peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
 	device, err := s.client.Device(s.deviceName)
 	if err != nil {
 		return err

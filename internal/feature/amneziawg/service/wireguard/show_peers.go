@@ -2,7 +2,7 @@ package wireguard
 
 import "fmt"
 
-func (s WireGuard) ShowPeers() error {
+func (s *WireGuard) ShowPeers() error {
 	device, err := s.client.Device(s.deviceName)
 	if err != nil {
 		return err
