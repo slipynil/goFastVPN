@@ -18,7 +18,7 @@ func (s WireGuard) createPeerCfg(peerPrivateKey wgtypes.Key, presharedKey wgtype
 	str := fmt.Sprintf(`
 [Interface]
 PrivateKey = %s
-Address = %s/32
+Address = %s
 Jc = %v
 Jmin = %v
 Jmax = %v
