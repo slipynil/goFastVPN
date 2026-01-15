@@ -11,20 +11,25 @@ import (
 
 func main() {
 	// клиент для управления WireGuard устройствами
-	WgClient, err := wgctrl.New()
+	wgClient, err := wgctrl.New()
 	if err != nil {
 		panic(err)
 	}
-	defer WgClient.Close()
+	defer wgClient.Close()
 	cfg, err := domains.NewObfuscation()
 	if err != nil {
 		panic(err)
 	}
 
-	device := os.Getenv("DEVICE")
+	deviceName := os.Getenv("DEVICE")
+	wgDevice, err := wgClient.Device(deviceName)
+	if err != nil {
+		panic(err)
+	}
+
 	endpoint := os.Getenv("ENDPOINT")
 
-	wgService := wireguard.WireGuardService(device, endpoint, cfg, WgClient)
+	wgService := wireguard.WireGuardService(endpoint, cfg, wgClient, wgDevice)
 
 	// Инфа о туннеле
 	if err := wgService.DeviceInfo(); err != nil {

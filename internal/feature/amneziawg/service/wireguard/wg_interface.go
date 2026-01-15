@@ -13,17 +13,22 @@ type WireGuardClient interface {
 }
 
 type WireGuard struct {
-	deviceName  string
 	endpoint    string
 	obfuscation *domains.Obfuscation
 	client      WireGuardClient
+	device      *wgtypes.Device
 }
 
-func WireGuardService(deviceName, endpoint string, obfuscation *domains.Obfuscation, client WireGuardClient) *WireGuard {
+func WireGuardService(
+	endpoint string, // IP:PORT
+	obfuscation *domains.Obfuscation, // config for obfuscation
+	client WireGuardClient, // client for WireGuard
+	device *wgtypes.Device, // device for WireGuard
+) *WireGuard {
 	return &WireGuard{
-		deviceName:  deviceName,
 		endpoint:    endpoint,
 		obfuscation: obfuscation,
 		client:      client,
+		device:      device,
 	}
 }

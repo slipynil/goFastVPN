@@ -17,5 +17,5 @@ func (s *WireGuard) DeletePeer(peerPublicKeyStr string) error {
 			},
 		},
 	}
-	return s.client.ConfigureDevice(s.deviceName, cfg)
+	return s.client.ConfigureDevice(s.device.Name, cfg)
 }

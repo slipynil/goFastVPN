@@ -51,7 +51,7 @@ func (s *WireGuard) AddPeer() (string, error) {
 	}
 
 	// Задаем новую конфигурацию девайса (туннель)
-	if err := s.client.ConfigureDevice(s.deviceName, cfg); err != nil {
+	if err := s.client.ConfigureDevice(s.device.Name, cfg); err != nil {
 		return "", err
 	}
 
@@ -61,15 +61,10 @@ func (s *WireGuard) AddPeer() (string, error) {
 // Выделение IP с проверкой занятости
 // ПОТОМ УДАЛИМ ЭТУ ФУНКЦИЮ
 func (s *WireGuard) allowedIPS() (string, error) {
-	// Получаем текущих пиров
-	device, err := s.client.Device(s.deviceName)
-	if err != nil {
-		return "", err
-	}
 
 	// Собираем занятые IP
 	usedIPs := make(map[string]bool)
-	for _, peer := range device.Peers {
+	for _, peer := range s.device.Peers {
 		for _, allowedIP := range peer.AllowedIPs {
 			usedIPs[allowedIP.IP.String()] = true
 		}
