@@ -37,7 +37,7 @@ func main() {
 		panic(err)
 	}
 	// инфа о подключениях
-	if err := wgService.ListPeers(); err != nil {
+	if err := wgService.ShowPeers(); err != nil {
 		panic(err)
 	}
 
