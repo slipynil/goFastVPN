@@ -1,44 +1,48 @@
 package wireguard
 
 import (
-	"app/internal/core/domains"
-	"encoding/json"
 	"fmt"
 	"net"
-	"os"
-	"time"
 
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
-func (s WireGuard) AddPeer() error {
+func (s WireGuard) AddPeer() (string, error) {
 
-	// создаем виртуальный IP
-	usrIPStr, err := s.allowedIPS()
+	// генерируем виртуальный IP
+	peerVirtualEndpoint, err := s.allowedIPS()
 	if err != nil {
-		return err
+		return "", err
 	}
 	// парсим маску и IP клиента
-	_, ipNet, err := net.ParseCIDR(usrIPStr + "/32")
+	_, ipNet, err := net.ParseCIDR(peerVirtualEndpoint)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	// создание приватного ключа для девайса
-	userPrivateKey, err := wgtypes.GeneratePrivateKey()
+	// создание приватного ключа для пользователя
+	peerPrivateKey, err := wgtypes.GeneratePrivateKey()
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	if err := newUserCfg(userPrivateKey, usrIPStr); err != nil {
-		return err
+	// генерируем PresharedKey
+	presharedKey, err := wgtypes.GenerateKey()
+	if err != nil {
+		return "", err
 	}
 
-	keepAliveEmptyPuckets := time.Second * 25
+	// создаем конфигурационный файл для пользователя
+	if err := s.createPeerCfg(peerPrivateKey, presharedKey, peerVirtualEndpoint); err != nil {
+		return "", err
+	}
+
+	peerPublicKey := peerPrivateKey.PublicKey()
+
 	peerCfg := wgtypes.PeerConfig{
-		PublicKey:                   userPrivateKey.PublicKey(),
-		PersistentKeepaliveInterval: &keepAliveEmptyPuckets,
-		AllowedIPs:                  []net.IPNet{*ipNet},
+		PublicKey:    peerPublicKey,
+		PresharedKey: &presharedKey,
+		AllowedIPs:   []net.IPNet{*ipNet},
 	}
 
 	cfg := wgtypes.Config{
@@ -46,10 +50,15 @@ func (s WireGuard) AddPeer() error {
 		Peers:        []wgtypes.PeerConfig{peerCfg},
 	}
 
-	return s.client.ConfigureDevice(s.deviceName, cfg)
+	if err := s.client.ConfigureDevice(s.deviceName, cfg); err != nil {
+		return "", err
+	}
+
+	return peerPublicKey.String(), nil
 }
 
 // Выделение IP с проверкой занятости
+// ПОТОМ УДАЛИМ ЭТУ ФУНКЦИЮ
 func (s WireGuard) allowedIPS() (string, error) {
 	// Получаем текущих пиров
 	device, err := s.client.Device(s.deviceName)
@@ -67,63 +76,13 @@ func (s WireGuard) allowedIPS() (string, error) {
 
 	// Ищем свободный IP
 	for i := 2; i < 255; i++ {
-		ip := fmt.Sprintf("10.0.0.%d", i)
-		if !usedIPs[ip] {
-			return ip, nil
+		endpoint := fmt.Sprintf("10.66.66.%d/32", i)
+		if !usedIPs[endpoint] {
+			return endpoint, nil
 		}
 	}
 
 	return "", fmt.Errorf("no free IPs available")
-}
-
-func newUserCfg(userPrivateKey wgtypes.Key, userIPstr string) error {
-	file, err := os.Open("data/obfuscation.txt")
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	cfg := domains.ObfuscationCfg{}
-	err = json.NewDecoder(file).Decode(&cfg)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf(`
-[Interface]
-PrivateKey = %s
-Address = %s/32
-Jc = %v
-Jmin = %v
-Jmax = %v
-S1 = %v
-S2 = %v
-S3 = %v
-S4 = %v
-H1 = 1106457265
-H2 = 249455488
-H3 = 1209847463
-H4 = 1646644382
-
-[Peer]
-PublicKey = %v
-Endpoint = 91.103.140.214:5050
-AllowedIPs = 0.0.0.0/0
-PersistentKeepalive = 25
-`,
-		userPrivateKey,
-		userIPstr,
-		cfg.Jc,
-		cfg.Jmin,
-		cfg.Jmax,
-		cfg.S1,
-		cfg.S2,
-		cfg.S3,
-		cfg.S4,
-		cfg.PublicServerKey,
-	)
-
-	return nil
 }
 
 // ДОП УЛУЧШЕНИЯ

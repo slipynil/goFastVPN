@@ -1,6 +1,10 @@
 package wireguard
 
-import "github.com/Jipok/wgctrl-go/wgtypes"
+import (
+	"app/internal/core/domains"
+
+	"github.com/Jipok/wgctrl-go/wgtypes"
+)
 
 // интерфейс для работы с WireGuard
 type WireGuardClient interface {
@@ -11,17 +15,17 @@ type WireGuardClient interface {
 }
 
 type WireGuard struct {
-	deviceName string
-	endpoint   string
-	port       string
-	client     WireGuardClient
+	deviceName  string
+	endpoint    string
+	obfuscation *domains.Obfuscation
+	client      WireGuardClient
 }
 
-func WireGuardService(deviceName, endpoint, port string, client WireGuardClient) WireGuard {
+func WireGuardService(deviceName, endpoint string, obfuscation *domains.Obfuscation, client WireGuardClient) WireGuard {
 	return WireGuard{
-		deviceName: deviceName,
-		endpoint:   endpoint,
-		port:       port,
-		client:     client,
+		deviceName:  deviceName,
+		endpoint:    endpoint,
+		obfuscation: obfuscation,
+		client:      client,
 	}
 }
