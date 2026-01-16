@@ -48,5 +48,5 @@ func main() {
 
 	// удаление пира по публичному ключу
 	time.Sleep(time.Minute * 5)
-	wgService.DeletePeer(userPublicKey)
+	awgService.DeletePeer(userPublicKey)
 }
