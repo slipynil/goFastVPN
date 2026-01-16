@@ -3,7 +3,7 @@ package amneziawg
 import "github.com/Jipok/wgctrl-go/wgtypes"
 
 // удаляет пир из тунеля по публичному ключу пира
-func (s *WireGuard) DeletePeer(peerPublicKeyStr string) error {
+func (a *awg) DeletePeer(peerPublicKeyStr string) error {
 	peerPublicKey, err := wgtypes.ParseKey(peerPublicKeyStr)
 	if err != nil {
 		return err
@@ -17,5 +17,5 @@ func (s *WireGuard) DeletePeer(peerPublicKeyStr string) error {
 			},
 		},
 	}
-	return s.client.ConfigureDevice(s.device.Name, cfg)
+	return a.client.ConfigureDevice(a.device.Name, cfg)
 }

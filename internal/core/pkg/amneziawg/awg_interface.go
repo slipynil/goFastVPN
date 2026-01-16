@@ -6,22 +6,22 @@ import (
 )
 
 // интерфейс для работы с WireGuard
-type WireGuardClient interface {
+type awgClient interface {
 	ConfigureDevice(name string, cfg wgtypes.Config) error
 	Device(name string) (*wgtypes.Device, error)
 	Close() error
 }
 
-type WireGuard struct {
+type awg struct {
 	endpoint    string
 	obfuscation Obfuscation
-	client      WireGuardClient
+	client      awgClient
 	device      *wgtypes.Device
 }
 
 // IP:PORT
 // config for obfuscation
-func New(tunnelName string, endpoint string, obfuscation *Obfuscation) (*WireGuard, error) {
+func New(tunnelName string, endpoint string, obfuscation *Obfuscation) (*awg, error) {
 	client, err := wgctrl.New()
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func New(tunnelName string, endpoint string, obfuscation *Obfuscation) (*WireGua
 	if err != nil {
 		return nil, err
 	}
-	return &WireGuard{
+	return &awg{
 		endpoint:    endpoint,
 		obfuscation: *obfuscation,
 		client:      client,

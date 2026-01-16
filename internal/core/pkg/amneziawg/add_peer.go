@@ -7,10 +7,10 @@ import (
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
-func (s *WireGuard) AddPeer(fileName string) (string, error) {
+func (a *awg) AddPeer(fileName string) (string, error) {
 
 	// генерируем виртуальный IP
-	peerVirtualEndpoint, err := s.allowedIPS()
+	peerVirtualEndpoint, err := a.allowedIPS()
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func (s *WireGuard) AddPeer(fileName string) (string, error) {
 	}
 
 	// создаем конфигурационный файл для пользователя
-	if err := s.createPeerCfg(fileName, peerPrivateKey, presharedKey, peerVirtualEndpoint); err != nil {
+	if err := a.createPeerCfg(fileName, peerPrivateKey, presharedKey, peerVirtualEndpoint); err != nil {
 		return "", err
 	}
 
@@ -51,7 +51,7 @@ func (s *WireGuard) AddPeer(fileName string) (string, error) {
 	}
 
 	// Задаем новую конфигурацию девайса (туннель)
-	if err := s.client.ConfigureDevice(s.device.Name, cfg); err != nil {
+	if err := a.client.ConfigureDevice(a.device.Name, cfg); err != nil {
 		return "", err
 	}
 
@@ -60,11 +60,11 @@ func (s *WireGuard) AddPeer(fileName string) (string, error) {
 
 // Выделение IP с проверкой занятости
 // ПОТОМ УДАЛИМ ЭТУ ФУНКЦИЮ
-func (s *WireGuard) allowedIPS() (string, error) {
+func (a *awg) allowedIPS() (string, error) {
 
 	// Собираем занятые IP
 	usedIPs := make(map[string]bool)
-	for _, peer := range s.device.Peers {
+	for _, peer := range a.device.Peers {
 		for _, allowedIP := range peer.AllowedIPs {
 			usedIPs[allowedIP.IP.String()] = true
 		}

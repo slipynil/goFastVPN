@@ -8,8 +8,8 @@ import (
 )
 
 // создает новый конфигурационный файл для подключения пользователя к туннелю
-func (s *WireGuard) createPeerCfg(fileName string, peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
-	publicDeviceKey := s.device.PublicKey.String()
+func (a *awg) createPeerCfg(fileName string, peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
+	publicDeviceKey := a.device.PublicKey.String()
 
 	str := fmt.Sprintf(`
 [Interface]
@@ -34,18 +34,18 @@ PersistentKeepalive = 25
 `,
 		peerPrivateKey,
 		peerVirtualIP,
-		s.obfuscation.Jc,
-		s.obfuscation.Jmin,
-		s.obfuscation.Jmax,
-		s.obfuscation.S1,
-		s.obfuscation.S2,
-		s.obfuscation.H1,
-		s.obfuscation.H2,
-		s.obfuscation.H3,
-		s.obfuscation.H4,
+		a.obfuscation.Jc,
+		a.obfuscation.Jmin,
+		a.obfuscation.Jmax,
+		a.obfuscation.S1,
+		a.obfuscation.S2,
+		a.obfuscation.H1,
+		a.obfuscation.H2,
+		a.obfuscation.H3,
+		a.obfuscation.H4,
 		publicDeviceKey,
 		presharedKey.String(),
-		s.endpoint,
+		a.endpoint,
 	)
 
 	// Создаем файл конфигурации

@@ -1,6 +1,6 @@
 package amneziawg
 
 // Close closes the amneziawg client.
-func (s WireGuard) Close() error {
-	return s.client.Close()
+func (a *awg) Close() error {
+	return a.client.Close()
 }
