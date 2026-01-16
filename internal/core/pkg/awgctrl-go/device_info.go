@@ -1,18 +1,17 @@
-package amneziawg
+package awgctrlgo
 
 import (
 	"fmt"
 )
 
-// выводит информацию о работе девайса(интерфейса)
-func (a *awg) DeviceInfo() error {
+// DeviceInfo prints information about the device (tunnel)
+func (a *awg) DeviceInfo() {
 
-	fmt.Println("----amneziawg работает----")
+	fmt.Println("----amneziawg is running----")
 	fmt.Println("Interface:", a.device.Name)
 	fmt.Println("Private key:", a.device.PrivateKey)
 	fmt.Println("Public key:", a.device.PublicKey)
 	fmt.Println("Listen Port:", a.device.ListenPort)
 	fmt.Println("Is amnezia:", a.device.IsAmnezia)
 
-	return nil
 }

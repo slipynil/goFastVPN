@@ -1,11 +1,11 @@
-package amneziawg
+package awgctrlgo
 
 import "fmt"
 
-func (a *awg) ShowPeers() error {
+// ShowPeers prints information about the connected peers
+func (a *awg) ShowPeers() {
 	if len(a.device.Peers) == 0 {
 		fmt.Println("No peers connected")
-		return nil
 	}
 
 	for _, peer := range a.device.Peers {
@@ -13,5 +13,4 @@ func (a *awg) ShowPeers() error {
 		fmt.Println("Public Key:", peer.PublicKey)
 		fmt.Println("Last Handshake:", peer.LastHandshakeTime)
 	}
-	return nil
 }

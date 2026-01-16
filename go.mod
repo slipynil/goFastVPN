@@ -1,6 +1,6 @@
 module app
 
-go 1.25.5
+go 1.25.6
 
 require github.com/Jipok/wgctrl-go v1.0.1
 
@@ -9,6 +9,7 @@ require (
 	github.com/mdlayher/genetlink v1.3.2 // indirect
 	github.com/mdlayher/netlink v1.8.0 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
+	github.com/slipynil/awgctrl-go v1.0.0 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect

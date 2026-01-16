@@ -1,4 +1,4 @@
-package amneziawg
+package awgctrlgo
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
-// создает новый конфигурационный файл для подключения пользователя к туннелю
-func (a *awg) createPeerCfg(fileName string, peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
+// creates a new configuration file for user connection to the tunnel
+func (a *awg) createFileCfg(fileName string, peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
 	publicDeviceKey := a.device.PublicKey.String()
 
 	str := fmt.Sprintf(`
@@ -48,9 +48,8 @@ PersistentKeepalive = 25
 		a.endpoint,
 	)
 
-	// Создаем файл конфигурации
-	// В будущем будем называть файл по ID юзера
-	file, err := os.Create("data/" + fileName + ".conf")
+	// create configuration file for user
+	file, err := os.Create(fileName + ".conf")
 	if err != nil {
 		return err
 	}
