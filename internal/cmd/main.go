@@ -2,7 +2,7 @@ package main
 
 import (
 	"app/internal/core/domains"
-	"app/internal/feature/amneziawg/service/wireguard"
+	"app/internal/core/pkg/amneziawg"
 	"os"
 	"time"
 
@@ -29,20 +29,20 @@ func main() {
 
 	endpoint := os.Getenv("ENDPOINT")
 
-	wgService := wireguard.WireGuardService(endpoint, cfg, wgClient, wgDevice)
+	awgService := amneziawg.WireGuardService(endpoint, cfg, wgClient, wgDevice)
 
 	// Инфа о туннеле
-	if err := wgService.DeviceInfo(); err != nil {
+	if err := awgService.DeviceInfo(); err != nil {
 		panic(err)
 	}
 
 	// Создание подключения
-	userPublicKey, err := wgService.AddPeer()
+	userPublicKey, err := awgService.AddPeer()
 	if err != nil {
 		panic(err)
 	}
 	// инфа о подключениях
-	if err := wgService.ShowPeers(); err != nil {
+	if err := awgService.ShowPeers(); err != nil {
 		panic(err)
 	}
 

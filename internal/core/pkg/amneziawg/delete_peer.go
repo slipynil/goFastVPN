@@ -1,4 +1,4 @@
-package wireguard
+package amneziawg
 
 import "github.com/Jipok/wgctrl-go/wgtypes"
 

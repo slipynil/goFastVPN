@@ -1,4 +1,4 @@
-package wireguard
+package amneziawg
 
 import (
 	"app/internal/core/domains"

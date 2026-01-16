@@ -1,4 +1,4 @@
-package wireguard
+package amneziawg
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 // выводит информацию о работе девайса(интерфейса)
 func (s *WireGuard) DeviceInfo() error {
 
-	fmt.Println("----wireguard работает----")
+	fmt.Println("----amneziawg работает----")
 	fmt.Println("Interface:", s.device.Name)
 	fmt.Println("Private key:", s.device.PrivateKey)
 	fmt.Println("Public key:", s.device.PublicKey)
