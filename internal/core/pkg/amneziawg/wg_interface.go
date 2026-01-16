@@ -1,8 +1,7 @@
 package amneziawg
 
 import (
-	"app/internal/core/domains"
-
+	"github.com/Jipok/wgctrl-go"
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
@@ -10,25 +9,31 @@ import (
 type WireGuardClient interface {
 	ConfigureDevice(name string, cfg wgtypes.Config) error
 	Device(name string) (*wgtypes.Device, error)
+	Close() error
 }
 
 type WireGuard struct {
 	endpoint    string
-	obfuscation *domains.Obfuscation
+	obfuscation Obfuscation
 	client      WireGuardClient
 	device      *wgtypes.Device
 }
 
-func WireGuardService(
-	endpoint string, // IP:PORT
-	obfuscation *domains.Obfuscation, // config for obfuscation
-	client WireGuardClient, // client for WireGuard
-	device *wgtypes.Device, // device for WireGuard
-) *WireGuard {
+// IP:PORT
+// config for obfuscation
+func New(tunnelName string, endpoint string, obfuscation *Obfuscation) (*WireGuard, error) {
+	client, err := wgctrl.New()
+	if err != nil {
+		return nil, err
+	}
+	device, err := client.Device(tunnelName)
+	if err != nil {
+		return nil, err
+	}
 	return &WireGuard{
 		endpoint:    endpoint,
-		obfuscation: obfuscation,
+		obfuscation: *obfuscation,
 		client:      client,
 		device:      device,
-	}
+	}, nil
 }

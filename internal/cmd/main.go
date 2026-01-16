@@ -1,52 +1,43 @@
 package main
 
 import (
-	"app/internal/core/domains"
 	"app/internal/core/pkg/amneziawg"
 	"os"
 	"time"
-
-	"github.com/Jipok/wgctrl-go"
 )
 
 func main() {
 	// клиент для управления WireGuard устройствами
-	wgClient, err := wgctrl.New()
-	if err != nil {
-		panic(err)
-	}
-	defer wgClient.Close()
-	cfg, err := domains.NewObfuscation()
+	cfg, err := amneziawg.NewObfuscation()
 	if err != nil {
 		panic(err)
 	}
 
-	deviceName := os.Getenv("DEVICE")
-	wgDevice, err := wgClient.Device(deviceName)
-	if err != nil {
-		panic(err)
-	}
-
+	tunnelName := os.Getenv("DEVICE")
 	endpoint := os.Getenv("ENDPOINT")
 
-	awgService := amneziawg.WireGuardService(endpoint, cfg, wgClient, wgDevice)
+	amnezia, err := amneziawg.New(tunnelName, endpoint, cfg)
+	if err != nil {
+		panic(err)
+	}
+	defer amnezia.Close()
 
 	// Инфа о туннеле
-	if err := awgService.DeviceInfo(); err != nil {
+	if err := amnezia.DeviceInfo(); err != nil {
 		panic(err)
 	}
 
 	// Создание подключения
-	userPublicKey, err := awgService.AddPeer("user")
+	userPublicKey, err := amnezia.AddPeer("user")
 	if err != nil {
 		panic(err)
 	}
 	// инфа о подключениях
-	if err := awgService.ShowPeers(); err != nil {
+	if err := amnezia.ShowPeers(); err != nil {
 		panic(err)
 	}
 
 	// удаление пира по публичному ключу
 	time.Sleep(time.Minute * 5)
-	awgService.DeletePeer(userPublicKey)
+	amnezia.DeletePeer(userPublicKey)
 }
