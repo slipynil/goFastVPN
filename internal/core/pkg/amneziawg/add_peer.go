@@ -7,7 +7,7 @@ import (
 	"github.com/Jipok/wgctrl-go/wgtypes"
 )
 
-func (s *WireGuard) AddPeer() (string, error) {
+func (s *WireGuard) AddPeer(fileName string) (string, error) {
 
 	// генерируем виртуальный IP
 	peerVirtualEndpoint, err := s.allowedIPS()
@@ -33,7 +33,7 @@ func (s *WireGuard) AddPeer() (string, error) {
 	}
 
 	// создаем конфигурационный файл для пользователя
-	if err := s.createPeerCfg(peerPrivateKey, presharedKey, peerVirtualEndpoint); err != nil {
+	if err := s.createPeerCfg(fileName, peerPrivateKey, presharedKey, peerVirtualEndpoint); err != nil {
 		return "", err
 	}
 

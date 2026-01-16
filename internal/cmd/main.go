@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Создание подключения
-	userPublicKey, err := awgService.AddPeer()
+	userPublicKey, err := awgService.AddPeer("user")
 	if err != nil {
 		panic(err)
 	}

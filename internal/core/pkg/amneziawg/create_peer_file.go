@@ -8,7 +8,7 @@ import (
 )
 
 // создает новый конфигурационный файл для подключения пользователя к туннелю
-func (s *WireGuard) createPeerCfg(peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
+func (s *WireGuard) createPeerCfg(fileName string, peerPrivateKey wgtypes.Key, presharedKey wgtypes.Key, peerVirtualIP string) error {
 	publicDeviceKey := s.device.PublicKey.String()
 
 	str := fmt.Sprintf(`
@@ -50,7 +50,7 @@ PersistentKeepalive = 25
 
 	// Создаем файл конфигурации
 	// В будущем будем называть файл по ID юзера
-	file, err := os.Create("data/user.conf")
+	file, err := os.Create("data/" + fileName + ".conf")
 	if err != nil {
 		return err
 	}
