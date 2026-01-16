@@ -1,32 +1,47 @@
 package main
 
 import (
-	"app/internal/feature/amneziawg/service/wireguard"
+	getenv "app/internal/core/pkg/getEnv"
+	"os"
+	"time"
 
-	"golang.zx2c4.com/wireguard/wgctrl"
+	awgctrlgo "github.com/slipynil/awgctrl-go"
 )
 
 func main() {
-	// клиент для управления WireGuard устройствами
-	WgClient, err := wgctrl.New()
+	// USE values ONLY ACTIVE tunnel's CONFIGURATION
+	// also in /etc/amnezia/amneziawg/awg0.conf
+	// available only this values
+
+	cfg, err := getenv.NewObfuscation()
 	if err != nil {
 		panic(err)
 	}
-	defer WgClient.Close()
+	tunnelName := os.Getenv("DEVICE")
+	endpoint := os.Getenv("ENDPOINT")
 
-	wgService := wireguard.WireGuardService("wg0", "127.0.0.1:5050", "5050", WgClient)
-	if err := wgService.ConfigureServer(); err != nil {
+	// client for managing amneziawg devices
+	// Not creating a new tunnel, using existing one
+	awg, err := awgctrlgo.New(tunnelName, endpoint, cfg)
+	if err != nil {
 		panic(err)
 	}
-	if err := wgService.DeviceInfo(); err != nil {
+	defer awg.Close()
+
+	// information about the tunnel
+	awg.DeviceInfo()
+
+	// create a new peer
+	userPublicKey, err := awg.AddPeer("user", "10.66.66.02/32")
+	if err != nil {
 		panic(err)
 	}
-	for range 10 {
-		if err := wgService.AddPeer(); err != nil {
-			panic(err)
-		}
-	}
-	if err := wgService.ListPeers(); err != nil {
+	// information about the peers
+	awg.ShowPeers()
+
+	// delete a peer by public key
+	time.Sleep(time.Minute * 5)
+	if err := awg.DeletePeer(userPublicKey); err != nil {
 		panic(err)
 	}
 }
