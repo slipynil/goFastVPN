@@ -10,10 +10,12 @@ import (
 )
 
 func main() {
-	// USE values ONLY ACTIVE tunnel's CONFIGURATION
-	// also in /etc/amnezia/amneziawg/awg0.conf
-	// available only this values
-	tg, err := telegram.New(os.Getenv("TELEGRAM_KEY"))
+	tgKey := os.Getenv("TELEGRAM_KEY")
+	if len(tgKey) == 0 {
+		panic("TELEGRAM_KEY environment variable is not set")
+	}
+
+	tg, err := telegram.New(tgKey)
 	if err != nil {
 		panic(err)
 	}
@@ -28,26 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	service.New(tg, awg)
+	service := service.New(tg, awg)
 
-	// // client for managing amneziawg devices
-	// // Not creating a new tunnel, using existing one
-	// defer awg.Close()
-
-	// // information about the tunnel
-	// awg.DeviceInfo()
-
-	// // create a new peer
-	// userPublicKey, err := awg.AddPeer("user", "10.66.66.02/32")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// // information about the peers
-	// awg.ShowPeers()
-
-	// // delete a peer by public key
-	// time.Sleep(time.Minute * 5)
-	// if err := awg.DeletePeer(userPublicKey); err != nil {
-	// 	panic(err)
-	// }
+	service.Update()
 }
