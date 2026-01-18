@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -21,5 +22,6 @@ func (s *server) Start(endpoint string) {
 	r.HandleFunc("/peers", s.httpHandlers.DeletePeer).Methods("DELETE")
 	r.HandleFunc("/peers", s.httpHandlers.AddPeer).Methods("POST")
 
+	fmt.Printf("HTTP started on %s\n", endpoint)
 	http.ListenAndServe(endpoint, r)
 }
