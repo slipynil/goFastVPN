@@ -15,7 +15,7 @@ func main() {
 	}
 	tunnelName, awgEndpoint := os.Getenv("DEVICE"), os.Getenv("AWG_ENDPOINT")
 	httpEndpoint := os.Getenv("HTTP_ENDPOINT")
-	if tunnelName == "" || awgEndpoint == "" {
+	if tunnelName == "" || awgEndpoint == "" || httpEndpoint == "" {
 		panic("DEVICE and AWG_ENDPOINT environment variables are required")
 	}
 	awg, err := awgctrlgo.New(tunnelName, awgEndpoint, cfg)
