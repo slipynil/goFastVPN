@@ -14,6 +14,9 @@ func main() {
 		panic(err)
 	}
 	tunnelName, endpoint := os.Getenv("DEVICE"), os.Getenv("AWG_ENDPOINT")
+	if tunnelName == "" || endpoint == "" {
+		panic("DEVICE and AWG_ENDPOINT environment variables are required")
+	}
 	awg, err := awgctrlgo.New(tunnelName, endpoint, cfg)
 	if err != nil {
 		panic(err)
