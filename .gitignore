@@ -1,2 +1,2 @@
-data
-.env
+services/awg/.env
+services/telegram/.env
