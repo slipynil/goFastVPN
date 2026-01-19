@@ -1,13 +1,14 @@
-module app
+module awg-service
 
 go 1.25.6
 
 require (
-	github.com/Jipok/wgctrl-go v1.0.1
-	github.com/slipynil/awgctrl-go v1.0.0
+	github.com/gorilla/mux v1.8.1
+	github.com/slipynil/awgctrl-go v1.0.1
 )
 
 require (
+	github.com/Jipok/wgctrl-go v1.0.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/mdlayher/genetlink v1.3.2 // indirect
 	github.com/mdlayher/netlink v1.8.0 // indirect
