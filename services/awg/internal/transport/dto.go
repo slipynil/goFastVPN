@@ -3,8 +3,8 @@ package transport
 import "net/http"
 
 type message struct {
-	StatusCode int   `json:"status_code"`
-	Error      error `json:"error"`
+	StatusCode int    `json:"status_code"`
+	Error      string `json:"error"`
 }
 type response struct {
 	Message message `json:"message"`
@@ -31,11 +31,15 @@ func newCreatePeer(publicKey, filePath string) createPeer {
 	}
 }
 
-func newResp(statusCode int, error error) response {
+func newResp(statusCode int, err error) response {
+	errMsg := ""
+	if err != nil {
+		errMsg = err.Error()
+	}
 	return response{
 		Message: message{
 			StatusCode: statusCode,
-			Error:      error,
+			Error:      errMsg,
 		},
 	}
 }

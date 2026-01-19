@@ -1,8 +1,8 @@
 package dto
 
 type Message struct {
-	StatusCode int   `json:"status_code"`
-	Error      error `json:"error"`
+	StatusCode int    `json:"status_code"`
+	Error      string `json:"error"`
 }
 
 type Request struct {

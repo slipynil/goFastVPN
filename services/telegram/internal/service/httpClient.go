@@ -19,7 +19,7 @@ func NewHttpClient(endpoint string) client {
 	return client{httpClient, endpoint}
 }
 
-func (c *client) AddPeer(virtualEndpoint, fileName string) (*dto.AddPeerResponse, error) {
+func (c *client) AddPeer(virtualEndpoint, fileName string) (dto.AddPeerResponse, error) {
 
 	// parse request body
 	req := dto.Request{
@@ -32,14 +32,14 @@ func (c *client) AddPeer(virtualEndpoint, fileName string) (*dto.AddPeerResponse
 	// get response
 	resp, err := c.http.Post(c.url, "application/json", data)
 	if err != nil {
-		return nil, err
+		return dto.AddPeerResponse{}, err
 	}
 	defer resp.Body.Close()
 
 	// check status code
 	if resp.StatusCode != http.StatusCreated {
 		fmt.Println("Status:", resp.Status)
-		return nil, errors.New("failed to add peer")
+		return dto.AddPeerResponse{}, errors.New("failed to add peer")
 	}
 
 	// decode response body
@@ -47,7 +47,7 @@ func (c *client) AddPeer(virtualEndpoint, fileName string) (*dto.AddPeerResponse
 	json.NewDecoder(resp.Body).Decode(&respBody)
 
 	fmt.Println("Peer added successfully")
-	return &respBody, nil
+	return respBody, nil
 }
 
 func (c *client) DeletePeer(publicKey string) error {
