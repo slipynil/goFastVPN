@@ -8,7 +8,9 @@ import (
 
 func main() {
 	tgKey := os.Getenv("TELEGRAM_KEY")
-	if len(tgKey) == 0 {
+	url := os.Getenv("URL")
+
+	if len(tgKey) == 0 && len(url) == 0 {
 		panic("TELEGRAM_KEY environment variable is not set")
 	}
 
@@ -17,7 +19,9 @@ func main() {
 		panic(err)
 	}
 
-	service := service.New(tg)
+	client := service.NewHttpClient(url)
+
+	service := service.New(tg, client)
 
 	service.Update()
 }
