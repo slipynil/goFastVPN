@@ -62,7 +62,8 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicKey, err := h.awg.AddPeer(req.FileName, req.VirtualEndpoint)
+	filePath := "../../data/" + req.FileName
+	publicKey, err := h.awg.AddPeer(filePath, req.VirtualEndpoint)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp := newResp(http.StatusInternalServerError, fmt.Errorf("failed to add peer: %w", err))
@@ -72,7 +73,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	resp := newCreatePeer(publicKey, req.FileName+".conf")
+	resp := newCreatePeer(publicKey, filePath+".conf")
 	json.NewEncoder(w).Encode(resp)
 
 }
