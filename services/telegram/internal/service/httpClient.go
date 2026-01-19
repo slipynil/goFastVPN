@@ -10,8 +10,8 @@ import (
 )
 
 type client struct {
-	http     *http.Client
-	endpoint string
+	http *http.Client
+	url  string
 }
 
 func NewHttpClient(endpoint string) client {
@@ -29,10 +29,8 @@ func (c *client) AddPeer(virtualEndpoint, fileName string) (*dto.AddPeerResponse
 	reqBytes, _ := json.Marshal(req)
 	data := bytes.NewReader(reqBytes)
 
-	url := fmt.Sprintf("http://%s/peer", c.endpoint)
-
 	// get response
-	resp, err := c.http.Post(url, "application/json", data)
+	resp, err := c.http.Post(c.url, "application/json", data)
 	if err != nil {
 		return nil, err
 	}
@@ -50,4 +48,34 @@ func (c *client) AddPeer(virtualEndpoint, fileName string) (*dto.AddPeerResponse
 
 	fmt.Println("Peer added successfully")
 	return &respBody, nil
+}
+
+func (c *client) DeletePeer(publicKey string) error {
+	req, err := http.NewRequest("GET", c.url, nil)
+	if err != nil {
+		return err
+	}
+
+	// get url params
+	q := req.URL.Query()
+	q.Add("publicKey", publicKey)
+
+	// set url params
+	req.URL.RawQuery = q.Encode()
+
+	// send request
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// check status code
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Status:", resp.Status)
+		return errors.New("failed to delete peer")
+	}
+
+	fmt.Println("Peer deleted successfully")
+	return nil
 }
