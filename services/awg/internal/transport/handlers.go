@@ -71,6 +71,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	resp := newCreatePeer(publicKey, req.FileName+".conf")
 	json.NewEncoder(w).Encode(resp)
 
