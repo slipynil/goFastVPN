@@ -4,6 +4,7 @@ import (
 	getenv "awg-service/internal/getEnv"
 	"awg-service/internal/transport"
 	"os"
+	"path/filepath"
 
 	awgctrlgo "github.com/slipynil/awgctrl-go"
 )
@@ -18,7 +19,11 @@ func main() {
 	if tunnelName == "" || awgEndpoint == "" || httpEndpoint == "" {
 		panic("DEVICE and AWG_ENDPOINT environment variables are required")
 	}
-	awg, err := awgctrlgo.New(tunnelName, awgEndpoint, "data", cfg)
+	fileAbs, err := filepath.Abs("./data")
+	if err != nil {
+		panic(err)
+	}
+	awg, err := awgctrlgo.New(tunnelName, awgEndpoint, fileAbs, cfg)
 	if err != nil {
 		panic(err)
 	}
