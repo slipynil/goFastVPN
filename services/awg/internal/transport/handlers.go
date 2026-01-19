@@ -27,7 +27,9 @@ func (h *handlers) DeletePeer(w http.ResponseWriter, r *http.Request) {
 	if publicKey == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		resp := newResp(http.StatusBadRequest, fmt.Errorf("public key is required"))
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			fmt.Printf("failed to encode response: %v", err)
+		}
 
 		return
 	}
@@ -36,14 +38,18 @@ func (h *handlers) DeletePeer(w http.ResponseWriter, r *http.Request) {
 	if err := h.awg.DeletePeer(publicKey); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp := newResp(http.StatusInternalServerError, fmt.Errorf("failed to delete peer: %w", err))
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			fmt.Printf("failed to encode response: %v", err)
+		}
 
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	resp := newResp(http.StatusOK, nil)
-	json.NewEncoder(w).Encode(resp)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		fmt.Printf("failed to encode response: %v", err)
+	}
 
 }
 
@@ -51,13 +57,18 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	var req request
-	json.NewDecoder(r.Body).Decode(&req)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("failed to decode request: %v", err)
+		return
+	}
 
 	// check if file name and virtual endpoint are empty
 	if req.FileName == "" || req.VirtualEndpoint == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		resp := newResp(http.StatusBadRequest, fmt.Errorf("file name and virtual endpoint are required"))
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			fmt.Printf("failed to encode response: %v", err)
+		}
 
 		return
 	}
@@ -66,13 +77,17 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp := newResp(http.StatusInternalServerError, fmt.Errorf("failed to add peer: %w", err))
-		json.NewEncoder(w).Encode(resp)
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			fmt.Printf("failed to encode response: %v", err)
+		}
 
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
 	resp := newCreatePeer(publicKey, filePath)
-	json.NewEncoder(w).Encode(resp)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		fmt.Printf("failed to encode response: %v", err)
+	}
 
 }
