@@ -59,7 +59,6 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	var req request
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		fmt.Printf("failed to decode request: %v", err)
-		return
 	}
 
 	// check if file name and virtual endpoint are empty
