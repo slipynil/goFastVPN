@@ -1,7 +1,3 @@
-<<<<<<< HEAD
 services/awg/.env
 services/telegram/.env
-=======
 data
-.env
->>>>>>> master
