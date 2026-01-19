@@ -8,7 +8,7 @@ import (
 
 // awg is an interface for interacting with the AWG service.
 type awg interface {
-	AddPeer(fileName, virtualEndpoint string) (string, error)
+	AddPeer(fileName, virtualEndpoint string) (string, string, error)
 	DeletePeer(peerPublicKeyStr string) error
 }
 
@@ -62,8 +62,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := "../../data/" + req.FileName
-	publicKey, err := h.awg.AddPeer(filePath, req.VirtualEndpoint)
+	filePath, publicKey, err := h.awg.AddPeer(req.FileName, req.VirtualEndpoint)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp := newResp(http.StatusInternalServerError, fmt.Errorf("failed to add peer: %w", err))
@@ -73,7 +72,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	resp := newCreatePeer(publicKey, filePath+".conf")
+	resp := newCreatePeer(publicKey, filePath)
 	json.NewEncoder(w).Encode(resp)
 
 }
