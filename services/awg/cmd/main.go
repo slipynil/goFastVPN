@@ -9,6 +9,12 @@ import (
 	awgctrlgo "github.com/slipynil/awgctrl-go"
 )
 
+var (
+	DefaultHTTP   = ""
+	DefaultDEVICE = ""
+	DefaultAWG    = ""
+)
+
 func main() {
 	cfg, err := getenv.NewObfuscation()
 
@@ -16,8 +22,8 @@ func main() {
 		panic(err)
 	}
 
-	tunnelName, awgEndpoint := os.Getenv("DEVICE"), os.Getenv("AWG_ENDPOINT")
-	httpEndpoint := os.Getenv("HTTP_ENDPOINT")
+	tunnelName, awgEndpoint := getOpt(os.Getenv("DEVICE"), DefaultDEVICE), getOpt(os.Getenv("AWG_ENDPOINT"), DefaultAWG)
+	httpEndpoint := getOpt(os.Getenv("HTTP_ENDPOINT"), DefaultHTTP)
 
 	if tunnelName == "" || awgEndpoint == "" || httpEndpoint == "" {
 		panic("DEVICE and AWG_ENDPOINT environment variables are required")
@@ -35,4 +41,11 @@ func main() {
 	}
 	service := transport.New(awg, storagePath)
 	service.Start(httpEndpoint)
+}
+
+func getOpt(value string, defaultValue string) string {
+	if len(value) == 0 {
+		return defaultValue
+	}
+	return value
 }
