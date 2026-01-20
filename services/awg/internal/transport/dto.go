@@ -12,7 +12,7 @@ type response struct {
 
 type request struct {
 	VirtualEndpoint string `json:"virtual_endpoint"`
-	ID              string `json:"id"`
+	ID              int64  `json:"id"`
 }
 
 type createPeerResponse struct {

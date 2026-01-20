@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -62,7 +63,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if file name and virtual endpoint are empty
-	if req.ID == "" || req.VirtualEndpoint == "" {
+	if req.ID == 0 || req.VirtualEndpoint == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		resp := newResp(http.StatusBadRequest, fmt.Errorf("file name and virtual endpoint are required"))
 
@@ -73,7 +74,9 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, publicKey, err := h.awg.AddPeer(req.ID, req.VirtualEndpoint)
+	fileName := strconv.FormatInt(req.ID, 10)
+
+	_, publicKey, err := h.awg.AddPeer(fileName, req.VirtualEndpoint)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
