@@ -19,11 +19,11 @@ func (s *service) Update() error {
 
 			// add peer command send conf file for user
 			if update.Message.IsCommand() && update.Message.Command() == "add" {
-				data, err := s.httpClient.AddPeer("10.66.66.5/32", update.Message.Chat.ID)
+				_, err := s.httpClient.AddPeer("10.66.66.5/32", update.Message.Chat.ID)
 				if err != nil {
 					fmt.Println("Error adding peer:", err)
 				}
-				bufer, err := s.httpClient.DownloadConfFile(data.PublicKey)
+				bufer, err := s.httpClient.DownloadConfFile(update.Message.Chat.ID)
 				if err != nil {
 					fmt.Println(err)
 				}

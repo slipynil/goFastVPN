@@ -74,7 +74,7 @@ func (c *client) DeletePeer(publicKey string) error {
 	return nil
 }
 
-func (c *client) DownloadConfFile(id string) ([]byte, error) {
+func (c *client) DownloadConfFile(id int64) ([]byte, error) {
 	url := fmt.Sprintf("%s/peers/%s/config", c.url, id)
 
 	resp, err := http.Get(url)
