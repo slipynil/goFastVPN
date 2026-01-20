@@ -51,8 +51,8 @@ func (c *client) AddPeer(virtualEndpoint string, id int64) (dto.AddPeerResponse,
 	return respBody, nil
 }
 
-func (c *client) DeletePeer(id string) error {
-	url := fmt.Sprintf("%s/peers/%s", c.url, id)
+func (c *client) DeletePeer(publicKey string) error {
+	url := fmt.Sprintf("%s/peers/%s", c.url, publicKey)
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
@@ -74,8 +74,8 @@ func (c *client) DeletePeer(id string) error {
 	return nil
 }
 
-func (c *client) DownloadConfFile(publicKey string) ([]byte, error) {
-	url := fmt.Sprintf("%s/peers/%s/config", c.url, publicKey)
+func (c *client) DownloadConfFile(id string) ([]byte, error) {
+	url := fmt.Sprintf("%s/peers/%s/config", c.url, id)
 
 	resp, err := http.Get(url)
 	if err != nil {

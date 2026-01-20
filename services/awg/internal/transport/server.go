@@ -19,9 +19,9 @@ func New(awg awg, storagePath string) *server {
 
 func (s *server) Start(endpoint string) {
 	r := mux.NewRouter()
-	r.HandleFunc("/peers/{id}", s.httpHandlers.DeletePeer).Methods("DELETE")
+	r.HandleFunc("/peers/{publicKey}", s.httpHandlers.DeletePeer).Methods("DELETE")
 	r.HandleFunc("/peers", s.httpHandlers.AddPeer).Methods("POST")
-	r.HandleFunc("/peers/{publicKey}/config", s.httpHandlers.SendConfFile).Methods("GET")
+	r.HandleFunc("/peers/{id}/config", s.httpHandlers.SendConfFile).Methods("GET")
 
 	fmt.Printf("HTTP started on %s\n", endpoint)
 	http.ListenAndServe(endpoint, r)
