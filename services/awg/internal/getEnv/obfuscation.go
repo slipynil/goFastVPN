@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	DefaultJS   = ""
+	DefaultJC   = ""
 	DefaultJMIN = ""
 	DefaultJMAX = ""
 	DefaultS1   = ""
@@ -23,7 +23,7 @@ var (
 // NewObfuscation creates a new Obfuscation struct from environment variables.
 // You can also use Obfuscation struct for initialization awg service
 func NewObfuscation() (*awgctrlgo.Obfuscation, error) {
-	jc := getOpt(os.Getenv("JS"), DefaultJS)
+	jc := getOpt(os.Getenv("JC"), DefaultJC)
 	if len(jc) == 0 {
 		return nil, fmt.Errorf("JS is not set")
 	}
