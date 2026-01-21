@@ -3,8 +3,8 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"telegram-service/internal/dto"
 )
@@ -19,18 +19,21 @@ func NewHttpClient(endpoint string) client {
 	return client{httpClient, endpoint}
 }
 
-func (c *client) AddPeer(virtualEndpoint, fileName string) (dto.AddPeerResponse, error) {
+// AddPeer adds a new peer, use method post, and returns the response body with publicKey
+func (c *client) AddPeer(virtualEndpoint string, id int64) (dto.AddPeerResponse, error) {
 
 	// parse request body
 	req := dto.Request{
 		VirtualEndpoint: virtualEndpoint,
-		FileName:        fileName,
+		ID:              id,
 	}
 	reqBytes, _ := json.Marshal(req)
 	data := bytes.NewReader(reqBytes)
 
+	url := fmt.Sprintf("%s/peers", c.url)
+
 	// get response
-	resp, err := c.http.Post(c.url, "application/json", data)
+	resp, err := c.http.Post(url, "application/json", data)
 	if err != nil {
 		return dto.AddPeerResponse{}, err
 	}
@@ -38,30 +41,23 @@ func (c *client) AddPeer(virtualEndpoint, fileName string) (dto.AddPeerResponse,
 
 	// check status code
 	if resp.StatusCode != http.StatusCreated {
-		fmt.Println("Status:", resp.Status)
-		return dto.AddPeerResponse{}, errors.New("failed to add peer")
+		return dto.AddPeerResponse{}, fmt.Errorf("failed to add peer, status %d", resp.StatusCode)
 	}
 
 	// decode response body
 	respBody := dto.AddPeerResponse{}
 	json.NewDecoder(resp.Body).Decode(&respBody)
 
-	fmt.Println("Peer added successfully")
 	return respBody, nil
 }
 
 func (c *client) DeletePeer(publicKey string) error {
-	req, err := http.NewRequest("GET", c.url, nil)
+	url := fmt.Sprintf("%s/peers/%s", c.url, publicKey)
+
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
-
-	// get url params
-	q := req.URL.Query()
-	q.Add("publicKey", publicKey)
-
-	// set url params
-	req.URL.RawQuery = q.Encode()
 
 	// send request
 	resp, err := c.http.Do(req)
@@ -72,10 +68,31 @@ func (c *client) DeletePeer(publicKey string) error {
 
 	// check status code
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Status:", resp.Status)
-		return errors.New("failed to delete peer")
+		return fmt.Errorf("failed to delete peer, status %d", resp.StatusCode)
 	}
 
-	fmt.Println("Peer deleted successfully")
 	return nil
+}
+
+func (c *client) DownloadConfFile(id int64) ([]byte, error) {
+	url := fmt.Sprintf("%s/peers/%d/config", c.url, id)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// check status code
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to download config file, status %d", resp.StatusCode)
+	}
+
+	// read body to buffer
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	return data, nil
 }
