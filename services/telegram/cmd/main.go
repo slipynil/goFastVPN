@@ -3,38 +3,35 @@ package main
 import (
 	"context"
 	"os"
+	httpclient "telegram-service/internal/httpClient"
 	"telegram-service/internal/repository"
 	"telegram-service/internal/service"
-	"telegram-service/internal/telegram"
 
-	"github.com/jackc/pgx/v5"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func main() {
 	tgKey := os.Getenv("TELEGRAM_KEY")
 	url := os.Getenv("HTTP_URL")
-	sql_url := os.Getenv("SQL_URL")
+	dbConn := os.Getenv("DB_CONN")
 
-	if len(tgKey) == 0 || len(url) == 0 || len(sql_url) == 0 {
-		panic("TELEGRAM_KEY, HTTP_URL, or SQL_URL environment variable is not set")
+	if len(tgKey) == 0 || len(url) == 0 || len(dbConn) == 0 {
+		panic("TELEGRAM_KEY, HTTP_URL, or DB_CONN environment variable is not set")
 	}
 
 	// init telegram service
-	tg, err := telegram.New(tgKey)
+
+	tg, err := tgbotapi.NewBotAPI(tgKey)
 	if err != nil {
 		panic(err)
 	}
 
 	// init http client service
-	client := service.NewHttpClient(url)
+	client := httpclient.New(url)
 
 	// init postgres service
-	conn, err := pgx.Connect(context.Background(), sql_url)
+	postgres, err := repository.New(context.Background(), dbConn)
 	if err != nil {
-		panic(err)
-	}
-	postgres := repository.New(conn, context.Background())
-	if err := postgres.Ping(); err != nil {
 		panic(err)
 	}
 
