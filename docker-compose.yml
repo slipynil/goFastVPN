@@ -1,4 +1,15 @@
 services:
+  telegram-service:
+    build:
+      context: ./services/telegram
+      dockerfile: Dockerfile
+    ports:
+      - "7777:7777"
+    env_file:
+      - ./services/telegram/.env
+    depends_on:
+      - migrate
+
   migrate:
     image: migrate/migrate
     env_file:
