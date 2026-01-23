@@ -1,4 +1,4 @@
-package service
+package httpclient
 
 import (
 	"bytes"
@@ -14,18 +14,18 @@ type client struct {
 	url  string
 }
 
-func NewHttpClient(endpoint string) client {
-	httpClient := &http.Client{}
-	return client{httpClient, endpoint}
+func New(endpoint string) *client {
+	return &client{&http.Client{}, endpoint}
 }
 
 // AddPeer adds a new peer, use method post, and returns the response body with publicKey
-func (c *client) AddPeer(virtualEndpoint string, id int64) (dto.AddPeerResponse, error) {
+func (c *client) AddPeer(hostID int, telegramID int64) (dto.AddPeerResponse, error) {
 
+	virtualEndpoint := fmt.Sprintf("10.66.66.%d/32", hostID)
 	// parse request body
 	req := dto.Request{
 		VirtualEndpoint: virtualEndpoint,
-		ID:              id,
+		ID:              telegramID,
 	}
 	reqBytes, _ := json.Marshal(req)
 	data := bytes.NewReader(reqBytes)
@@ -74,8 +74,8 @@ func (c *client) DeletePeer(publicKey string) error {
 	return nil
 }
 
-func (c *client) DownloadConfFile(id int64) ([]byte, error) {
-	url := fmt.Sprintf("%s/peers/%d/config", c.url, id)
+func (c *client) DownloadConfFile(telegramID int64) ([]byte, error) {
+	url := fmt.Sprintf("%s/peers/%d/config", c.url, telegramID)
 
 	resp, err := http.Get(url)
 	if err != nil {
