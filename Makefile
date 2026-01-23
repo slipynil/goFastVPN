@@ -17,3 +17,6 @@ migrate-down:
 	@migrate -path=./services/telegram/migrations -database "$(DB_CONN)" down
 migrate-version:
 	@migrate -path=./services/telegram/migrations -database "$(DB_CONN)" version
+
+postgres-up:
+	@docker compose --env-file services/telegram/.env up postgres -d
