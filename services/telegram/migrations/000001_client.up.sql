@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS client (
     host_id SERIAL PRIMARY KEY,
-    telegram_username VARCHAR(255),
-    telegram_id BIGINT,
-    status BOOLEAN DEFAULT TRUE,
-    expires_at TIMESTAMP
+    telegram_username VARCHAR(255) NOT NULL,
+    telegram_id BIGINT UNIQUE NOT NULL,
+    status BOOLEAN DEFAULT FALSE NOT NULL,
+    expires_at TIMESTAMP NOT NULL
 );
 
 -- Set the sequence to start from 2
