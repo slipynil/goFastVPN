@@ -1,0 +1,29 @@
+services:
+  migrate:
+    image: migrate/migrate
+    env_file:
+      - ./services/telegram/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./services/telegram/migrations:/migrations
+    command: ["-path", "/migrations", "-database", "${DB_CONN}", "up"]
+    restart: no
+
+  postgres:
+    image: postgres:18-bookworm
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./services/telegram/.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./services/telegram/data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      retries: 5
