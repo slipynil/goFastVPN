@@ -65,7 +65,7 @@ func (h *handlers) AddPeer(w http.ResponseWriter, r *http.Request) {
 	// check if file name and virtual endpoint are empty
 	if req.ID == 0 || req.VirtualEndpoint == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		resp := newResp(http.StatusBadRequest, fmt.Errorf("file name and virtual endpoint are required"))
+		resp := newResp(http.StatusBadRequest, fmt.Errorf("id and virtual endpoint are required"))
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			fmt.Printf("failed to encode response: %v", err)
