@@ -5,9 +5,9 @@ awg-run:
 	@export $$(cat $(AWG_ENV) | xargs) && \
 	cd services/awg && sudo -E go run cmd/main.go
 
-container-up:
-	@docker container up -d
-container-down:
-	@docker container down
-container-logs:
-	@docker container logs
+compose-up:
+	@cd services/telegram && docker compose up -d
+compose-down:
+	@cd services/telegram && docker compose down
+compose-logs:
+	@cd services/telegram && docker compose logs
