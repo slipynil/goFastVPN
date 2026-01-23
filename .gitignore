@@ -2,3 +2,4 @@ services/awg/.env
 services/telegram/.env
 services/awg/data
 services/telegram/data
+.env
