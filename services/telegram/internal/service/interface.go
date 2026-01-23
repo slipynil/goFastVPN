@@ -1,22 +1,38 @@
 package service
 
-import "telegram-service/internal/telegram"
+import (
+	"telegram-service/internal/dto"
+	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
 
 type postgres interface {
 	Ping() error
+	Close() error
+	GetHostID(telegramID int64) (int, error)
+	AddUser(username string, id int64, expiresAt time.Time) error
+	UpdateStatusTrue(telegramID int64) error
+	DeleteClient(telegramID int64) error
+}
+
+type httpClient interface {
+	AddPeer(hostID int, telegramID int64) (dto.AddPeerResponse, error)
+	DeletePeer(publicKey string) error
+	DownloadConfFile(telegramID int64) ([]byte, error)
 }
 
 type service struct {
-	tg         *telegram.Tg
-	httpClient client
+	tg         *tgbotapi.BotAPI
+	httpClient httpClient
 	postgres   postgres
 }
 
-func New(tg *telegram.Tg, client client, postgres postgres) service {
+func New(tg *tgbotapi.BotAPI, httpClient httpClient, postgres postgres) service {
 
 	return service{
 		tg:         tg,
-		httpClient: client,
+		httpClient: httpClient,
 		postgres:   postgres,
 	}
 }
