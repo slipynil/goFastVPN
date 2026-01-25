@@ -5,6 +5,8 @@ services:
     build: .
     ports:
       - "7777:7777"
+    volumes:
+      - ./logs:/logs
     depends_on:
       - migrate
 
@@ -19,6 +21,8 @@ services:
     restart: no
 
   postgres:
+    ports:
+      - "5432:5432"
     image: postgres:18-bookworm
     environment:
       POSTGRES_USER: ${DB_USER}
