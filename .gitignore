@@ -1,5 +1,5 @@
 services/awg/.env
-services/telegram/.env
 services/awg/data
+services/telegram/.env
 services/telegram/data
-.env
+services/telegram/logs

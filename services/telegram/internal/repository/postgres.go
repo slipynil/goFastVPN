@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"telegram-service/internal/dto"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -27,6 +29,10 @@ func New(ctx context.Context, dbConn string) (*Postgres, error) {
 	}, nil
 }
 
+func (p *Postgres) Close() error {
+	return p.conn.Close(p.ctx)
+}
+
 // ping postgres server
 func (p *Postgres) Ping() error {
 	return p.conn.Ping(p.ctx)
@@ -34,17 +40,54 @@ func (p *Postgres) Ping() error {
 
 // add user`s identity in client table
 func (p *Postgres) AddUser(username string, telegramID int64, expiresAt time.Time) error {
-	sqlRow := `
-	INSERT INTO client (telegram_username, telegram_id, status, expires_at)
-	VALUES ($1, $2, false, $3);
-	`
-	_, err := p.conn.Exec(p.ctx, sqlRow, username, telegramID, expiresAt)
-	return err
-}
+	// Начинаем транзакцию для атомарности операции
+	tx, err := p.conn.Begin(p.ctx)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(p.ctx) // Откатываем, если не будет Commit
 
-// close postgres server connection
-func (p *Postgres) Close() error {
-	return p.conn.Close(p.ctx)
+	// Проверяем, есть ли уже клиент с таким telegram_id (с блокировкой строки)
+	var exists bool
+	err = tx.QueryRow(p.ctx, `
+		SELECT EXISTS (SELECT 1 FROM client WHERE telegram_id = $1 FOR UPDATE)
+	`, telegramID).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("failed to check if client exists: %w", err)
+	}
+
+	if exists {
+		// Клиент уже есть — возвращаем свою ошибку
+		return dto.ErrUserExist
+	}
+
+	// Только если нет — вставляем нового
+	// Находим минимальный свободный host_id (заполняем "дырки" от удаленных записей)
+	_, err = tx.Exec(p.ctx, `
+		INSERT INTO client (host_id, telegram_username, telegram_id, status, expires_at)
+		VALUES (
+			COALESCE(
+				(SELECT t1.host_id + 1
+				 FROM client t1
+				 LEFT JOIN client t2 ON t1.host_id + 1 = t2.host_id
+				 WHERE t2.host_id IS NULL AND t1.host_id + 1 > 1
+				 ORDER BY t1.host_id
+				 LIMIT 1),
+				COALESCE((SELECT MAX(host_id) + 1 FROM client), 2)
+			),
+			$1, $2, false, $3
+		)
+	`, username, telegramID, expiresAt)
+	if err != nil {
+		return fmt.Errorf("failed to insert client: %w", err)
+	}
+
+	// Коммитим транзакцию
+	if err = tx.Commit(p.ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }
 
 // get hostID from client table where telegram_username = $1
