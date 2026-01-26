@@ -6,7 +6,7 @@ services:
     ports:
       - "7777:7777"
     volumes:
-      - ./logs:/logs
+      - ./logs:/app/logs
     depends_on:
       - migrate
 

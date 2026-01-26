@@ -21,7 +21,7 @@ func (s *service) Update(logger *logger.MyLogger) {
 			callBackData, err := dto.DecodeCallbackData(u.CallbackQuery.Data)
 			logger.IsErr("fail decoding callback data", err)
 			switch callBackData.Action {
-			case "назад":
+			case "<- назад":
 				err := s.telegram.UpdateMainMenu(u)
 				logger.IsErr("fail to redirect main menu", err)
 			case "получить конфиг":
@@ -33,13 +33,24 @@ func (s *service) Update(logger *logger.MyLogger) {
 					logger.IsErr("fail adding peer", err)
 				}
 			case "помощь":
-				err := s.telegram.UpdateSendText(u, "помоги сам себе")
+				err := s.telegram.UpdateSendText(u, `
+🛠 Техническая поддержка GopherSecure
+Возникли вопросы по настройке? Мы поможем!
+📖 Наш канал: @GopherSecure — как настроить соединение на iPhone, Android, Windows и Mac.
+👤 Живая поддержка: Напишите нашему инженеру @w3berr, если возникли проблемы с подключением.`)
 				logger.IsErr("", err)
 			case "стоимость":
-				err := s.telegram.UpdateSendText(u, "5000тыщ хех")
+				err := s.telegram.UpdateSendText(u, `
+💳 Тарифы GopherSecure
+
+🔘 Тестовый (24ч): 0 ₽ — Попробуйте качество связи.
+🔘 Стандарт (30 дней): 200 ₽ — Оптимально для работы и серфинга.
+
+Все тарифы включают безлимитный трафик на скорости до 1 Гбит/с.`,
+				)
 				logger.IsErr("", err)
 			case "оплатить":
-				err := s.telegram.UpdateSendText(u, "получи конфиг")
+				err := s.telegram.UpdateSendText(u, "ссылка на оплату")
 				logger.IsErr("", err)
 			}
 		}

@@ -50,7 +50,7 @@ func keyboardMainMenu() tgbotapi.InlineKeyboardMarkup {
 }
 
 func keyboardBackMenu() tgbotapi.InlineKeyboardMarkup {
-	opt := "назад"
+	opt := "<- назад"
 	btn := tgbotapi.NewInlineKeyboardButtonData(opt, dto.EncodeCallbackData(opt))
 	row := tgbotapi.NewInlineKeyboardRow(btn)
 	return tgbotapi.NewInlineKeyboardMarkup(row)
@@ -59,7 +59,7 @@ func keyboardBackMenu() tgbotapi.InlineKeyboardMarkup {
 // создает новое сообщение и отправляет меню
 func (t *Telegram) Menu(chatID int64) error {
 
-	msg := tgbotapi.NewMessage(chatID, "главное меню")
+	msg := tgbotapi.NewMessage(chatID, "📱 Главное меню")
 	msg.ReplyMarkup = keyboardMainMenu()
 
 	_, err := t.bot.Send(msg)
@@ -72,7 +72,7 @@ func (t *Telegram) UpdateMainMenu(update tgbotapi.Update) error {
 	msg := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,
 		update.CallbackQuery.Message.MessageID,
-		"главное меню",
+		"📱 главное меню",
 		keyboardMainMenu(),
 	)
 
