@@ -8,16 +8,21 @@ import (
 )
 
 type Telegram struct {
-	bot     *tgbotapi.BotAPI
-	updates tgbotapi.UpdatesChannel
+	bot           *tgbotapi.BotAPI
+	updates       tgbotapi.UpdatesChannel
+	providerToken string
 }
 
-func New(token string) (*Telegram, error) {
-	bot, err := tgbotapi.NewBotAPI(token)
+func New(telegramToken, providerToken string) (*Telegram, error) {
+	bot, err := tgbotapi.NewBotAPI(telegramToken)
 	if err != nil {
 		return nil, err
 	}
-	telegram := &Telegram{bot: bot}
+	bot.Debug = true
+	telegram := &Telegram{
+		bot:           bot,
+		providerToken: providerToken,
+	}
 
 	u := tgbotapi.NewUpdate(0)
 	telegram.updates = bot.GetUpdatesChan(u)
@@ -37,8 +42,9 @@ func (t *Telegram) Chan() tgbotapi.UpdatesChannel {
 	return t.updates
 }
 
+// маппинг кнопок главного меню
 func keyboardMainMenu() tgbotapi.InlineKeyboardMarkup {
-	options := []string{"получить конфиг", "помощь", "стоимость", "оплатить"}
+	options := []string{"получить конфиг", "помощь", "протестировать", "стоимость", "оплатить"}
 
 	var rows [][]tgbotapi.InlineKeyboardButton
 	for _, opt := range options {
@@ -49,6 +55,7 @@ func keyboardMainMenu() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(rows...)
 }
 
+// маппинг кнопок для выхода из опции
 func keyboardBackMenu() tgbotapi.InlineKeyboardMarkup {
 	opt := "<- назад"
 	btn := tgbotapi.NewInlineKeyboardButtonData(opt, dto.EncodeCallbackData(opt))
@@ -80,6 +87,7 @@ func (t *Telegram) UpdateMainMenu(update tgbotapi.Update) error {
 	return err
 }
 
+// меняет текущее сообщение и отправляет заданный текст с маппингом выхода из опции
 func (t *Telegram) UpdateSendText(update tgbotapi.Update, text string) error {
 	msg := tgbotapi.NewEditMessageTextAndMarkup(
 		update.CallbackQuery.Message.Chat.ID,

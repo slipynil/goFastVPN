@@ -24,6 +24,12 @@ type CallbackData struct {
 	Action string `json:"action"`
 }
 
+type PaymentHandler struct {
+	InvoicePayload string
+	TotalAmount    int
+	Currency       string
+}
+
 func DecodeCallbackData(raw string) (*CallbackData, error) {
 	bs, err := base64.RawURLEncoding.DecodeString(raw)
 	if err != nil {

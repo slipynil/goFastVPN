@@ -12,15 +12,16 @@ import (
 
 func main() {
 	tgToken := os.Getenv("TELEGRAM_KEY")
+	providerToken := os.Getenv("PROVIDER_TOKEN")
 	url := os.Getenv("HTTP_URL")
 	dbConn := os.Getenv("DB_CONN")
 
-	if len(tgToken) == 0 || len(url) == 0 || len(dbConn) == 0 {
-		panic("TELEGRAM_KEY, HTTP_URL, or DB_CONN environment variable is not set")
+	if len(tgToken) == 0 || len(providerToken) == 0 || len(url) == 0 || len(dbConn) == 0 {
+		panic("TELEGRAM_KEY, PROVIDER_TOKEN, HTTP_URL, or DB_CONN environment variable is not set")
 	}
 
 	// init telegram service
-	telegram, err := telegram.New(tgToken)
+	telegram, err := telegram.New(tgToken, providerToken)
 	if err != nil {
 		panic(err)
 	}
@@ -33,6 +34,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer postgres.Close()
 
 	// init service
 	service := service.New(telegram, httpClient, postgres)

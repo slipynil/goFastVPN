@@ -3,3 +3,4 @@ services/awg/data
 services/telegram/.env
 services/telegram/data
 services/telegram/logs
+services/pay/.env
