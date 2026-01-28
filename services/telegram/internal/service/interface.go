@@ -8,29 +8,44 @@ import (
 )
 
 type postgres interface {
-	Ping() error
+	// postgres methods
 	Close() error
-	GetHostID(telegramID int64) (int, error)
-	AddUser(username string, telegramID int64, expiresAt time.Time) error
-	UpdateStatusTrue(telegramID int64) error
-	DeleteClient(telegramID int64) error
+
+	// clients methods
+	IsTested(chatID int64) error
+	AddClient(username string, chatID int64) error
+	StatusTrue(chatID int64) error
+	StatusFalse(chatID int64) error
+	CheckStatus(chatID int64) bool
+
+	// payments methods
+	NewPayment(chatID int64, payload string) error
+	SuccessfulPaymentStatus(payload string) error
+
+	// peers methods
+	NewConnection(chatID int64, expires_at time.Time) error
+	GetHostID(chatID int64) (int, error)
 }
 
 type telegramClient interface {
 	// Chan возвращает канал обновлений (от tgbotapi.UpdatesChannel)
 	Chan() tgbotapi.UpdatesChannel
-
 	// Menu отправляет сообщение с главным меню
 	Menu(chatID int64) error
-
 	// UpdateMainMenu меняет сообщение на главном меню
 	UpdateMainMenu(update tgbotapi.Update) error
-
 	// UpdateSendText меняет текст сообщения и ставит меню "назад"
 	UpdateSendText(update tgbotapi.Update, text string) error
-
 	// SendFile отправляет файл (конфиг) пользователю
 	SendFile(chat *tgbotapi.Chat, buffer []byte) error
+	// создает кнопку оплаты
+	CreateAndSendInvoice(chatID int64, payload string) error
+	// запрос перед оплатой
+	// на него нужно ответить в течение 10 секунд
+	PreCheckoutQuery(update tgbotapi.Update) error
+	// handler, успешная оплата
+	// отправляет успешный результат пользователю
+	HandleSuccessfulPayment(update tgbotapi.Update) (*dto.PaymentHandler, error)
 }
 
 type httpClient interface {

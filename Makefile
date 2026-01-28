@@ -1,9 +1,14 @@
-AWG_ENV := services/awg/.env
+awg_env := services/awg/.env
+pay_env := services/pay/.env
 
-.PHONY: awg-run
+.phony: awg-run pay-run
 awg-run:
-	@export $$(cat $(AWG_ENV) | xargs) && \
-	cd services/awg && sudo -E go run cmd/main.go
+	@export $$(cat $(awg_env) | xargs) && \
+	cd services/awg && sudo -e go run cmd/main.go
+
+pay-run:
+	@export $$(cat $(pay_env) | xargs) && \
+	cd services/pay && go run cmd/main.go
 
 compose-up:
 	@cd services/telegram && docker compose up -d
