@@ -61,12 +61,22 @@ func (s *service) Update(logger *logger.MyLogger) {
 				logger.IsErr("", err)
 
 			case "оплатить":
-				err := s.Invoice(u)
-				logger.IsErr("failed to create invoice", err)
+				if s.postgres.CheckStatus(u.CallbackQuery.Message.Chat.ID) {
+					err := s.telegram.UpdateSendText(u, "Вы уже оплатили")
+					logger.IsErr("", err)
+				} else {
+					err := s.Invoice(u)
+					logger.IsErr("failed to create invoice", err)
+				}
+
 			case "протестировать":
-				s.postgres.IsTested(u.CallbackQuery.Message.Chat.ID)
-				err := s.add(u.CallbackQuery.Message.Chat, 67)
-				logger.IsErr("", err)
+				if s.postgres.IsTested(u.CallbackQuery.Message.Chat.ID) {
+					err := s.telegram.UpdateSendText(u, "У вас уже был тестовый доступ")
+					logger.IsErr("", err)
+				} else {
+					err := s.add(u.CallbackQuery.Message.Chat, 0)
+					logger.IsErr("", err)
+				}
 			}
 		}
 	}

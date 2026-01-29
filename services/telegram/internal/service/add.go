@@ -12,7 +12,7 @@ func (s *service) add(chat *tgbotapi.Chat, price int) error {
 	switch price {
 	case 20000:
 		data = data.Add(30 * time.Hour * 24)
-	case 67:
+	case 0:
 		data = data.Add(time.Hour * 24)
 	}
 

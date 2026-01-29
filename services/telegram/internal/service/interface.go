@@ -12,8 +12,11 @@ type postgres interface {
 	Close() error
 
 	// clients methods
-	IsTested(chatID int64) error
 	AddClient(username string, chatID int64) error
+
+	Tested(chatID int64) error
+	IsTested(chatID int64) bool
+
 	StatusTrue(chatID int64) error
 	StatusFalse(chatID int64) error
 	CheckStatus(chatID int64) bool
