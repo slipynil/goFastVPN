@@ -10,6 +10,10 @@ type response struct {
 	Message message `json:"message"`
 }
 
+type delRequest struct {
+	PublicKey string `json:"public_key"`
+}
+
 type request struct {
 	VirtualEndpoint string `json:"virtual_endpoint"`
 	ID              int64  `json:"id"`
