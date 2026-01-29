@@ -76,6 +76,7 @@ func (s *service) Update(logger *logger.MyLogger) {
 				} else {
 					err := s.add(u.CallbackQuery.Message.Chat, 0)
 					logger.IsErr("", err)
+					err = s.telegram.UpdateSendText(u, "Тестовый доступ активирован на 24 часа")
 				}
 			}
 		}
