@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/gorilla/mux v1.8.1
-	github.com/slipynil/awgctrl-go v1.0.7
+	github.com/slipynil/awgctrl-go v1.0.8
 )
 
 require (
