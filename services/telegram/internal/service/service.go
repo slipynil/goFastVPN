@@ -9,7 +9,7 @@ import (
 
 func (s *service) Update(logger *logger.MyLogger) {
 
-	duration := time.Minute
+	duration := time.Hour
 	go s.CheckSubcription(logger, duration)
 
 	for u := range s.telegram.Chan() {
