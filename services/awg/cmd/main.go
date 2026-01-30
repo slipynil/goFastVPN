@@ -28,7 +28,8 @@ func main() {
 	if tunnelName == "" || awgEndpoint == "" || httpEndpoint == "" {
 		panic("DEVICE and AWG_ENDPOINT environment variables are required")
 	}
-	storagePath, err := filepath.Abs("./data")
+
+	storagePath, err := filepath.Abs("/etc/amnezia/amneziawg/configs/")
 
 	if err != nil {
 		panic(err)

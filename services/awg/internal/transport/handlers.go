@@ -27,12 +27,13 @@ type handlers struct {
 // use endpoint with publicKey VAR parameter
 func (h *handlers) DeletePeer(w http.ResponseWriter, r *http.Request) {
 
-	// Read publicKey in URL
-	vars := mux.Vars(r)
-	publicKey := vars["publicKey"]
+	var req delRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("failed to decode request: %v", err)
+	}
 
 	// awg delete peer and get process status
-	if err := h.awg.DeletePeer(publicKey); err != nil {
+	if err := h.awg.DeletePeer(req.PublicKey); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		resp := newResp(http.StatusInternalServerError, fmt.Errorf("failed to delete peer: %w", err))
 

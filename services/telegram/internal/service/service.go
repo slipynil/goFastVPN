@@ -1,11 +1,16 @@
 package service
 
 import (
+	"fmt"
 	"telegram-service/internal/dto"
 	"telegram-service/logger"
+	"time"
 )
 
 func (s *service) Update(logger *logger.MyLogger) {
+
+	duration := time.Minute
+	go s.CheckSubcription(logger, duration)
 
 	for u := range s.telegram.Chan() {
 		// если есть сигнал об оплате
@@ -14,29 +19,43 @@ func (s *service) Update(logger *logger.MyLogger) {
 			logger.IsErr("failed to answer pre_checkout_query", err)
 			// если структура message не пустая и является командой
 		} else if u.Message != nil {
+			chat := u.Message.Chat
 			if u.Message.SuccessfulPayment != nil {
 				if dto, err := s.telegram.HandleSuccessfulPayment(u); err != nil {
 					logger.IsErr("payment canceled", err)
 				} else {
 					err := s.postgres.SuccessfulPaymentStatus(dto.InvoicePayload)
 					logger.IsErr("failed to change true status on payment", err)
-					err = s.postgres.StatusTrue(u.Message.Chat.ID)
+					err = s.postgres.StatusTrue(chat.ID)
 					logger.IsErr("failed to change true status on client", err)
-					err = s.add(u.Message.Chat, dto.TotalAmount)
+					err = s.add(chat.ID, dto.TotalAmount)
 					logger.IsErr("failed to add peer", err)
+					if err == nil {
+						msg := fmt.Sprintf("пользователь %s купил подписку за %v %s", chat.UserName, dto.TotalAmount/100, dto.Currency)
+						logger.Logger.Info(msg)
+					}
 				}
 			}
 			// если команда
 			switch u.Message.Command() {
+
 			case "menu":
-				s.telegram.Menu(u.Message.Chat.ID)
+				s.telegram.Menu(chat.ID)
+
 			case "start":
-				err := s.postgres.AddClient(u.Message.Chat.UserName, u.Message.Chat.ID)
-				logger.IsErr("failed to add client to postgres", err)
+				err := s.postgres.AddClient(chat.UserName, chat.ID)
+				if err != nil {
+					logger.IsErr("failed to add client to postgres", err)
+				} else {
+					err := s.telegram.SendText(chat.ID, "Вы успешно авторизовались, нажмите /menu для вывода всех функций")
+					logger.IsErr("", err)
+				}
 			}
 			continue
 			// если это inline кнопка
 		} else if u.CallbackQuery != nil {
+
+			chat := u.CallbackQuery.Message.Chat
 
 			// add peer command send conf file for user
 			callBackData, err := dto.DecodeCallbackData(u.CallbackQuery.Data)
@@ -50,7 +69,7 @@ func (s *service) Update(logger *logger.MyLogger) {
 
 			case "получить конфиг":
 				err := s.getConfFile(u)
-				logger.IsErr("", err)
+				logger.IsErr("failed to get conf file", err)
 
 			case "помощь":
 				err := s.telegram.UpdateSendText(u, HelpText)
@@ -61,12 +80,34 @@ func (s *service) Update(logger *logger.MyLogger) {
 				logger.IsErr("", err)
 
 			case "оплатить":
-				err := s.Invoice(u)
-				logger.IsErr("failed to create invoice", err)
+				if s.postgres.CheckStatus(chat.ID) {
+					err := s.telegram.UpdateSendText(u, "Вы уже оплатили")
+					logger.IsErr("", err)
+				} else {
+					err := s.Invoice(u)
+					if err != nil {
+						logger.IsErr("failed to create invoice", err)
+					} else {
+					}
+				}
+
 			case "протестировать":
-				s.postgres.IsTested(u.CallbackQuery.Message.Chat.ID)
-				err := s.add(u.CallbackQuery.Message.Chat, 67)
-				logger.IsErr("", err)
+				if s.postgres.IsTested(chat.ID) {
+					err := s.telegram.UpdateSendText(u, "У вас уже был тестовый доступ")
+					logger.IsErr("", err)
+				} else {
+					err := s.postgres.Tested(chat.ID)
+					logger.IsErr("failed to mark user as tested", err)
+					err = s.add(chat.ID, 0)
+					logger.IsErr("failed to add user", err)
+					err = s.telegram.UpdateSendText(u, "Тестовый доступ активирован на 24 часа")
+					if err != nil {
+						logger.IsErr("failed to send text", err)
+					} else {
+						msg := fmt.Sprintf("пользователь %s получил тестовый доступ", chat.UserName)
+						logger.Logger.Info(msg)
+					}
+				}
 			}
 		}
 	}

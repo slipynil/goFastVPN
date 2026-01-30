@@ -12,8 +12,11 @@ type postgres interface {
 	Close() error
 
 	// clients methods
-	IsTested(chatID int64) error
 	AddClient(username string, chatID int64) error
+
+	Tested(chatID int64) error
+	IsTested(chatID int64) bool
+
 	StatusTrue(chatID int64) error
 	StatusFalse(chatID int64) error
 	CheckStatus(chatID int64) bool
@@ -24,6 +27,8 @@ type postgres interface {
 
 	// peers methods
 	NewConnection(chatID int64, expires_at time.Time) error
+	SaveKey(chatID int64, publicKey string) error
+	ExpiredConnection() ([]dto.DelEntity, error)
 	GetHostID(chatID int64) (int, error)
 }
 
@@ -36,8 +41,10 @@ type telegramClient interface {
 	UpdateMainMenu(update tgbotapi.Update) error
 	// UpdateSendText меняет текст сообщения и ставит меню "назад"
 	UpdateSendText(update tgbotapi.Update, text string) error
+	// SendText отправляет текстовое сообщение пользователю
+	SendText(chatID int64, text string) error
 	// SendFile отправляет файл (конфиг) пользователю
-	SendFile(chat *tgbotapi.Chat, buffer []byte) error
+	SendFile(chatID int64, buffer []byte) error
 	// создает кнопку оплаты
 	CreateAndSendInvoice(chatID int64, payload string) error
 	// запрос перед оплатой
