@@ -22,6 +22,8 @@ github.com/slipynil/awgctrl-go v1.0.6 h1:twChKOLIvziBbwpz8j97C+DJEnoB43yPiUJH5LH
 github.com/slipynil/awgctrl-go v1.0.6/go.mod h1:x0ZGblil3iborj1Ei3h2pVFSfSQnb8o9I4izVJfgdtg=
 github.com/slipynil/awgctrl-go v1.0.7 h1:Z1UibhxuVZwdFq3h8WB6GA9/xoEzZXAX8fyI90hy3Lg=
 github.com/slipynil/awgctrl-go v1.0.7/go.mod h1:x0ZGblil3iborj1Ei3h2pVFSfSQnb8o9I4izVJfgdtg=
+github.com/slipynil/awgctrl-go v1.0.8 h1:xIGffHgtgxlpW/5GFihGkbhdsY4hycniRJVdT5zOrVw=
+github.com/slipynil/awgctrl-go v1.0.8/go.mod h1:x0ZGblil3iborj1Ei3h2pVFSfSQnb8o9I4izVJfgdtg=
 golang.org/x/crypto v0.46.0 h1:cKRW/pmt1pKAfetfu+RCEvjvZkA9RimPbh7bhFjGVBU=
 golang.org/x/crypto v0.46.0/go.mod h1:Evb/oLKmMraqjZ2iQTwDwvCtJkczlDuTmdJXoZVzqU0=
 golang.org/x/net v0.48.0 h1:zyQRTTrjc33Lhh0fBgT/H3oZq9WuvRR5gPC70xpDiQU=
