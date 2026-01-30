@@ -3,6 +3,7 @@ package telegram
 import (
 	"fmt"
 	"telegram-service/internal/dto"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,7 +19,6 @@ func New(telegramToken, providerToken string) (*Telegram, error) {
 	if err != nil {
 		return nil, err
 	}
-	bot.Debug = true
 	telegram := &Telegram{
 		bot:           bot,
 		providerToken: providerToken,
@@ -101,13 +101,20 @@ func (t *Telegram) UpdateSendText(update tgbotapi.Update, text string) error {
 	return err
 }
 
-func (t *Telegram) SendFile(chat *tgbotapi.Chat, bufer []byte) error {
+func (t *Telegram) SendFile(chatID int64, bufer []byte) error {
 	// create document struct
+	unix := time.Now().Unix()
 	file := tgbotapi.FileBytes{
-		Name:  fmt.Sprintf("%s.conf", chat.UserName),
+		Name:  fmt.Sprintf("awg%d.conf", unix),
 		Bytes: bufer,
 	}
-	msg := tgbotapi.NewDocument(chat.ID, file)
+	msg := tgbotapi.NewDocument(chatID, file)
+	_, err := t.bot.Send(msg)
+	return err
+}
+
+func (t *Telegram) SendText(chatID int64, text string) error {
+	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.bot.Send(msg)
 	return err
 }

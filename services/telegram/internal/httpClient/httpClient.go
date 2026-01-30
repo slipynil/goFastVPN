@@ -52,9 +52,14 @@ func (c *client) AddPeer(hostID int, telegramID int64) (dto.AddPeerResponse, err
 }
 
 func (c *client) DeletePeer(publicKey string) error {
-	url := fmt.Sprintf("%s/peers/%s", c.url, publicKey)
-
-	req, err := http.NewRequest("DELETE", url, nil)
+	url := fmt.Sprintf("%s/peers", c.url)
+	reqDto := dto.DelRequest{PublicKey: publicKey}
+	byte, err := json.Marshal(reqDto)
+	if err != nil {
+		return err
+	}
+	buf := bytes.NewReader(byte)
+	req, err := http.NewRequest("DELETE", url, buf)
 	if err != nil {
 		return err
 	}
@@ -67,11 +72,15 @@ func (c *client) DeletePeer(publicKey string) error {
 	defer resp.Body.Close()
 
 	// check status code
-	if resp.StatusCode != http.StatusOK {
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return nil
+	case http.StatusInternalServerError:
+		return fmt.Errorf("config already deleted, status %d", resp.StatusCode)
+	default:
 		return fmt.Errorf("failed to delete peer, status %d", resp.StatusCode)
 	}
 
-	return nil
 }
 
 func (c *client) DownloadConfFile(telegramID int64) ([]byte, error) {
@@ -93,6 +102,7 @@ func (c *client) DownloadConfFile(telegramID int64) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
+	fmt.Printf("загружен конфиг %s\n", string(data))
 
 	return data, nil
 }
